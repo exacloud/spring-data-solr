@@ -1,6 +1,6 @@
 /*
  * RoutingSolrClientFactory.java
- * Copyright 2016 Qunhe Tech, all rights reserved.
+ * Copyright 2017 Qunhe Tech, all rights reserved.
  * Qunhe PROPRIETARY/CONFIDENTIAL, any form of usage is subject to approval.
  */
 

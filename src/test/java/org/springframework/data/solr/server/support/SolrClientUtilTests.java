@@ -15,13 +15,6 @@
  */
 package org.springframework.data.solr.server.support;
 
-import static org.hamcrest.core.IsCollectionContaining.*;
-import static org.hamcrest.core.IsEqual.*;
-import static org.hamcrest.text.IsEmptyString.*;
-
-import java.net.MalformedURLException;
-import java.util.Map;
-
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
@@ -44,6 +37,13 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.data.solr.core.mapping.SolrDocument;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import java.net.MalformedURLException;
+import java.util.Map;
+
+import static org.hamcrest.core.IsCollectionContaining.hasItems;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.text.IsEmptyString.isEmptyString;
 
 /**
  * @author Christoph Strobl
@@ -124,7 +124,7 @@ public class SolrClientUtilTests {
 		CloudSolrClient cloudClient = new CloudSolrClient(ZOO_KEEPER_URL, lbSolrClient);
 
 		CloudSolrClient clone = SolrClientUtils.clone(cloudClient);
-		Assert.assertEquals(ZOO_KEEPER_URL, ReflectionTestUtils.getField(clone, FIELD_ZOO_KEEPER));
+		Assert.assertEquals(ZOO_KEEPER_URL, clone.getZkHost());
 
 		LBHttpSolrClient lbClone = clone.getLbClient();
 		Assert.assertEquals(ReflectionTestUtils.getField(lbSolrClient, FIELD_ALIVE_SERVERS),
@@ -140,7 +140,7 @@ public class SolrClientUtilTests {
 		CloudSolrClient cloudClient = new CloudSolrClient(ZOO_KEEPER_URL, lbSolrClient);
 
 		CloudSolrClient clone = SolrClientUtils.clone(cloudClient, CORE_NAME);
-		Assert.assertEquals(ZOO_KEEPER_URL, ReflectionTestUtils.getField(clone, FIELD_ZOO_KEEPER));
+		Assert.assertEquals(ZOO_KEEPER_URL, clone.getZkHost());
 
 		LBHttpSolrClient lbClone = clone.getLbClient();
 		Map<String, ?> aliveServers = (Map<String, ?>) ReflectionTestUtils.getField(lbClone, FIELD_ALIVE_SERVERS);
@@ -155,7 +155,7 @@ public class SolrClientUtilTests {
 		CloudSolrClient cloudClient = new CloudSolrClient(ZOO_KEEPER_URL);
 
 		CloudSolrClient clone = SolrClientUtils.clone(cloudClient, CORE_NAME);
-		Assert.assertEquals(ZOO_KEEPER_URL, ReflectionTestUtils.getField(clone, FIELD_ZOO_KEEPER));
+		Assert.assertEquals(ZOO_KEEPER_URL, clone.getZkHost());
 
 		LBHttpSolrClient lbClone = clone.getLbClient();
 

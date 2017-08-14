@@ -15,16 +15,6 @@
  */
 package org.springframework.data.solr.server.support;
 
-import java.beans.PropertyDescriptor;
-import java.io.Closeable;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.ClientConnectionManager;
@@ -33,6 +23,7 @@ import org.apache.http.params.HttpParams;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
 import org.apache.solr.client.solrj.impl.CloudSolrClient;
+import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.client.solrj.impl.LBHttpSolrClient;
 import org.apache.solr.core.CoreContainer;
 import org.slf4j.Logger;
@@ -42,11 +33,19 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.dao.DataAccessResourceFailureException;
-import org.springframework.data.solr.VersionUtil;
 import org.springframework.data.solr.core.mapping.SolrDocument;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
+
+import java.beans.PropertyDescriptor;
+import java.io.Closeable;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.util.Map;
 
 /**
  * {@link SolrClientUtils} replaces SolrServerUtils from version 1.x
@@ -224,11 +223,7 @@ public class SolrClientUtils {
 
 		LBHttpSolrClient clone = null;
 		try {
-			if (VersionUtil.isSolr3XAvailable()) {
-				clone = cloneSolr3LBHttpServer(solrClient, core);
-			} else if (VersionUtil.isSolr4XAvailable() || VersionUtil.isSolr5XAvailable()) {
-				clone = cloneSolr4LBHttpServer(solrClient, core);
-			}
+            clone = cloneSolr4LBClient(solrClient, core);
 		} catch (Exception e) {
 			throw new BeanInstantiationException(solrClient.getClass(),
 					"Cannot create instace of " + solrClient.getClass() + ". ", e);
@@ -241,12 +236,9 @@ public class SolrClientUtils {
 	}
 
 	private static SolrClient cloneCloudSolrClient(SolrClient solrClient, String core) {
-		if (VersionUtil.isSolr3XAvailable() || solrClient == null) {
-			return null;
-		}
 
 		CloudSolrClient cloudServer = (CloudSolrClient) solrClient;
-		String zkHost = readField(solrClient, "zkHost");
+		String zkHost = cloudServer.getZkHost();
 
 		Constructor<? extends SolrClient> constructor = (Constructor<? extends SolrClient>) ClassUtils
 				.getConstructorIfAvailable(solrClient.getClass(), String.class, LBHttpSolrClient.class);
@@ -260,20 +252,8 @@ public class SolrClientUtils {
 		return clone;
 	}
 
-	private static LBHttpSolrClient cloneSolr3LBHttpServer(SolrClient solrClient, String core)
-			throws MalformedURLException {
-		CopyOnWriteArrayList<?> list = readField(solrClient, "aliveServers");
-
-		String[] servers = new String[list.size()];
-		for (int i = 0; i < list.size(); i++) {
-			servers[i] = appendCoreToBaseUrl(list.get(i).toString(), core);
-		}
-		return new LBHttpSolrClient(servers);
-	}
-
-	private static LBHttpSolrClient cloneSolr4LBHttpServer(SolrClient solrClient, String core)
-			throws MalformedURLException, InstantiationException, IllegalAccessException, IllegalArgumentException,
-			InvocationTargetException {
+	private static LBHttpSolrClient cloneSolr4LBClient(SolrClient solrClient, String core) throws MalformedURLException,
+			InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		Map<String, ?> map = readField(solrClient, "aliveServers");
 
 		String[] servers = new String[map.size()];
@@ -366,6 +346,14 @@ public class SolrClientUtils {
 				}
 			}
 		}
+	}
+
+	public static  boolean isHttpSolrClient(SolrClient solrClient) {
+		return (solrClient instanceof HttpSolrClient);
+	}
+
+	public static boolean isCloudSolrClient(SolrClient solrClient) {
+		return (solrClient instanceof CloudSolrClient);
 	}
 
 }

@@ -1,6 +1,6 @@
 /*
- * CloudSolrClientWrapper.java
- * Copyright 2016 Qunhe Tech, all rights reserved.
+ * SolrClientWrapper.java
+ * Copyright 2017 Qunhe Tech, all rights reserved.
  * Qunhe PROPRIETARY/CONFIDENTIAL, any form of usage is subject to approval.
  */
 
@@ -50,11 +50,6 @@ public class SolrClientWrapper extends SolrClient {
     }
 
     @Override
-    public void shutdown() {
-        delegate.shutdown();
-    }
-
-    @Override
     public UpdateResponse add(SolrInputDocument doc, int commitWithinMs) throws SolrServerException, IOException {
         return delegate.add(collection, doc, commitWithinMs);
     }
@@ -93,4 +88,8 @@ public class SolrClientWrapper extends SolrClient {
         return delegate.deleteById(collection, ids);
     }
 
+    @Override
+    public void close() throws IOException {
+        delegate.close();
+    }
 }

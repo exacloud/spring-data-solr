@@ -22,8 +22,10 @@
 		<commons.collections>3.2.1</commons.collections>
 		<commons.lang>3.1</commons.lang>
 		<httpcomponents>4.3.1</httpcomponents>
-		<solr>5.5.0</solr>
+		<solr>6.6.0</solr>
 		<springdata.commons>1.13.6.RELEASE</springdata.commons>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
 
 	<developers>
@@ -178,6 +180,12 @@
 			<scope>test</scope>
 		</dependency>
 
+        <dependency>
+			<groupId>org.apache.solr</groupId>
+			<artifactId>solr-langid</artifactId>
+			<version>${solr}</version>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
@@ -187,6 +195,16 @@
 
 	<build>
 		<plugins>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.6.2</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

@@ -21,7 +21,11 @@ package org.springframework.data.solr.core.query;
  * @author Christoph Strobl
  */
 public enum UpdateAction {
-	ADD("add"), INC("inc"), SET("set");
+	ADD("add"),
+	INC("inc"),
+	SET("set"),
+	REMOVE("remove"),
+	REMOVE_REGEX("removeregex");
 
 	private String solrOperation;
 

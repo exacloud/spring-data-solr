@@ -15,51 +15,27 @@
  */
 package org.springframework.data.solr.core;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrQuery.ORDER;
+import org.apache.solr.common.params.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
+import org.springframework.data.solr.core.query.*;
+import org.springframework.data.solr.core.query.FacetOptions.*;
+import org.springframework.data.solr.core.query.HighlightOptions.FieldWithHighlightParameters;
+import org.springframework.data.solr.core.query.HighlightOptions.HighlightParameter;
+import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrQuery.ORDER;
-import org.apache.solr.common.params.CommonParams;
-import org.apache.solr.common.params.FacetParams;
-import org.apache.solr.common.params.GroupParams;
-import org.apache.solr.common.params.HighlightParams;
-import org.apache.solr.common.params.ModifiableSolrParams;
-import org.apache.solr.common.params.SpellingParams;
-import org.apache.solr.common.params.StatsParams;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Order;
-import org.springframework.data.solr.VersionUtil;
-import org.springframework.data.solr.core.query.Criteria;
-import org.springframework.data.solr.core.query.FacetOptions;
-import org.springframework.data.solr.core.query.FacetOptions.FacetParameter;
-import org.springframework.data.solr.core.query.FacetOptions.FieldWithDateRangeParameters;
-import org.springframework.data.solr.core.query.FacetOptions.FieldWithFacetParameters;
-import org.springframework.data.solr.core.query.FacetOptions.FieldWithNumericRangeParameters;
-import org.springframework.data.solr.core.query.FacetOptions.FieldWithRangeParameters;
-import org.springframework.data.solr.core.query.FacetQuery;
-import org.springframework.data.solr.core.query.Field;
-import org.springframework.data.solr.core.query.FilterQuery;
-import org.springframework.data.solr.core.query.Function;
-import org.springframework.data.solr.core.query.GroupOptions;
-import org.springframework.data.solr.core.query.HighlightOptions;
-import org.springframework.data.solr.core.query.HighlightOptions.FieldWithHighlightParameters;
-import org.springframework.data.solr.core.query.HighlightOptions.HighlightParameter;
-import org.springframework.data.solr.core.query.HighlightQuery;
-import org.springframework.data.solr.core.query.Query;
-import org.springframework.data.solr.core.query.QueryParameter;
-import org.springframework.data.solr.core.query.SolrDataQuery;
-import org.springframework.data.solr.core.query.SpellcheckOptions;
-import org.springframework.data.solr.core.query.StatsOptions;
-import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
 
 /**
  * Implementation of {@link QueryParser}. <br/>
@@ -435,10 +411,6 @@ public class DefaultQueryParser extends QueryParserBase<SolrDataQuery> {
 	}
 
 	private void appendFacetingOnPivot(SolrQuery solrQuery, FacetQuery query) {
-		if (VersionUtil.isSolr3XAvailable()) {
-			throw new UnsupportedOperationException(
-					"Pivot Facets are not available for solr version lower than 4.x - Please check your depdendencies.");
-		}
 
 		FacetOptions facetOptions = query.getFacetOptions();
 		String[] pivotFields = convertFieldListToStringArray(facetOptions.getFacetOnPivots());

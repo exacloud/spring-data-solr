@@ -15,26 +15,10 @@
  */
 package org.springframework.data.solr.core;
 
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.apache.solr.client.solrj.response.FacetField;
+import org.apache.solr.client.solrj.response.*;
 import org.apache.solr.client.solrj.response.FacetField.Count;
-import org.apache.solr.client.solrj.response.FieldStatsInfo;
-import org.apache.solr.client.solrj.response.Group;
-import org.apache.solr.client.solrj.response.GroupCommand;
-import org.apache.solr.client.solrj.response.GroupResponse;
 import org.apache.solr.client.solrj.response.PivotField;
-import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.solr.client.solrj.response.RangeFacet;
-import org.apache.solr.client.solrj.response.SpellCheckResponse;
-import org.apache.solr.client.solrj.response.TermsResponse;
 import org.apache.solr.client.solrj.response.TermsResponse.Term;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.util.NamedList;
@@ -46,34 +30,16 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.repository.util.ClassUtils;
-import org.springframework.data.solr.VersionUtil;
-import org.springframework.data.solr.core.query.FacetQuery;
-import org.springframework.data.solr.core.query.Field;
-import org.springframework.data.solr.core.query.Query;
-import org.springframework.data.solr.core.query.SimpleField;
-import org.springframework.data.solr.core.query.SimplePivotField;
-import org.springframework.data.solr.core.query.result.FacetFieldEntry;
-import org.springframework.data.solr.core.query.result.FacetPivotFieldEntry;
-import org.springframework.data.solr.core.query.result.FacetQueryEntry;
-import org.springframework.data.solr.core.query.result.FieldStatsResult;
-import org.springframework.data.solr.core.query.result.GroupEntry;
-import org.springframework.data.solr.core.query.result.GroupResult;
-import org.springframework.data.solr.core.query.result.HighlightEntry;
-import org.springframework.data.solr.core.query.result.SimpleFacetFieldEntry;
-import org.springframework.data.solr.core.query.result.SimpleFacetPivotEntry;
-import org.springframework.data.solr.core.query.result.SimpleFacetQueryEntry;
-import org.springframework.data.solr.core.query.result.SimpleFieldStatsResult;
-import org.springframework.data.solr.core.query.result.SimpleGroupEntry;
-import org.springframework.data.solr.core.query.result.SimpleGroupResult;
-import org.springframework.data.solr.core.query.result.SimpleStatsResult;
-import org.springframework.data.solr.core.query.result.SimpleTermsFieldEntry;
-import org.springframework.data.solr.core.query.result.SolrResultPage;
+import org.springframework.data.solr.core.query.*;
+import org.springframework.data.solr.core.query.result.*;
 import org.springframework.data.solr.core.query.result.SpellcheckQueryResult.Alternative;
-import org.springframework.data.solr.core.query.result.StatsResult;
-import org.springframework.data.solr.core.query.result.TermsFieldEntry;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+
+import java.lang.annotation.Annotation;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Use Result Helper to extract various parameters from the QueryResponse and convert it into a proper Format taking
@@ -144,11 +110,6 @@ final class ResultHelper {
 
 	static Map<org.springframework.data.solr.core.query.PivotField, List<FacetPivotFieldEntry>> convertFacetQueryResponseToFacetPivotMap(
 			FacetQuery query, QueryResponse response) {
-
-		if (VersionUtil.isSolr3XAvailable()) {
-			// pivot facets are a solr 4+ Feature
-			return Collections.emptyMap();
-		}
 
 		Map<org.springframework.data.solr.core.query.PivotField, List<FacetPivotFieldEntry>> facetResult = new LinkedHashMap<org.springframework.data.solr.core.query.PivotField, List<FacetPivotFieldEntry>>();
 		NamedList<List<PivotField>> facetPivot = response.getFacetPivot();

@@ -15,14 +15,6 @@
  */
 package org.springframework.data.solr.core;
 
-import static org.mockito.Matchers.*;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.http.ParseException;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -64,21 +56,16 @@ import org.springframework.data.solr.ExampleSolrBean;
 import org.springframework.data.solr.UncategorizedSolrException;
 import org.springframework.data.solr.core.mapping.Indexed;
 import org.springframework.data.solr.core.mapping.SolrDocument;
-import org.springframework.data.solr.core.query.AnyCriteria;
-import org.springframework.data.solr.core.query.Criteria;
-import org.springframework.data.solr.core.query.PartialUpdate;
-import org.springframework.data.solr.core.query.Query;
-import org.springframework.data.solr.core.query.SimpleFacetAndHighlightQuery;
-import org.springframework.data.solr.core.query.SimpleFacetQuery;
-import org.springframework.data.solr.core.query.SimpleHighlightQuery;
-import org.springframework.data.solr.core.query.SimpleQuery;
-import org.springframework.data.solr.core.query.SimpleStringCriteria;
-import org.springframework.data.solr.core.query.SimpleTermsQuery;
-import org.springframework.data.solr.core.query.SolrDataQuery;
+import org.springframework.data.solr.core.query.*;
 import org.springframework.data.solr.core.schema.SolrPersistentEntitySchemaCreator.Feature;
 import org.springframework.data.solr.repository.ProductBean;
 import org.springframework.data.solr.repository.Score;
 import org.springframework.data.solr.server.SolrClientFactory;
+
+import java.io.IOException;
+import java.util.*;
+
+import static org.mockito.Matchers.*;
 
 /**
  * @author Christoph Strobl
@@ -415,15 +402,15 @@ public class SolrTemplateTests {
 	public void schemaShouldBeUpdatedPriorToSavingEntity() throws SolrServerException, IOException {
 
 		NamedList<Object> nl = new NamedList<Object>();
-		NamedList<Object> schema = new NamedList<Object>();
+		Map<String, Object> schema = new LinkedHashMap<>();
 		nl.add("version", 1.5F);
 		nl.add("schema", schema);
-		schema.add("version", 1.5F);
-		schema.add("name", "mock");
-		schema.add("fields", Collections.<NamedList<Object>> emptyList());
-		schema.add("dynamicFields", Collections.<NamedList<Object>> emptyList());
-		schema.add("fieldTypes", Collections.<NamedList<Object>> emptyList());
-		schema.add("copyFields", Collections.<NamedList<Object>> emptyList());
+		schema.put("version", 1.5F);
+		schema.put("name", "mock");
+		schema.put("fields", Collections.<NamedList<Object>> emptyList());
+		schema.put("dynamicFields", Collections.<NamedList<Object>> emptyList());
+		schema.put("fieldTypes", Collections.<NamedList<Object>> emptyList());
+		schema.put("copyFields", Collections.<NamedList<Object>> emptyList());
 
 		// schema.add(name, val);
 

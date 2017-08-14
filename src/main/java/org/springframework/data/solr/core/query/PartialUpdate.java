@@ -70,7 +70,7 @@ public class PartialUpdate implements Update {
 	}
 
 	/**
-	 * Add field with given name and value using {@link UpateAction.ADD} to the fields to be updated.
+	 * Add field with given name and value using {@link UpdateAction#ADD} to the fields to be updated.
 	 * 
 	 * @param fieldName
 	 * @param value
@@ -80,7 +80,7 @@ public class PartialUpdate implements Update {
 	}
 
 	/**
-	 * Add field with given name and value using {@link UpateAction.SET} to the fields to be updated.
+	 * Add field with given name and value using {@link UpdateAction#SET} to the fields to be updated.
 	 * 
 	 * @param fieldName
 	 * @param value
@@ -90,13 +90,21 @@ public class PartialUpdate implements Update {
 	}
 
 	/**
-	 * Add field with given name and value using {@link UpateAction.INC} to the fields to be updated.
+	 * Add field with given name and value using {@link UpdateAction#INC} to the fields to be updated.
 	 * 
 	 * @param fieldName
 	 * @param value
 	 */
 	public void increaseValueOfField(String fieldName, Object value) {
 		add(new SimpleUpdateField(fieldName, value, UpdateAction.INC));
+	}
+
+	public void removeValueFromField(String fieldName, Object value) {
+		add(new SimpleUpdateField(fieldName, value, UpdateAction.REMOVE));
+	}
+
+	public void removeValueByRegexFromField(String fieldName, String regex) {
+		add(new SimpleUpdateField(fieldName, regex, UpdateAction.REMOVE_REGEX));
 	}
 
 	@Override

@@ -15,26 +15,11 @@
  */
 package org.springframework.data.solr.core;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.TimeZone;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.common.params.CommonParams;
-import org.apache.solr.common.params.FacetParams;
+import org.apache.solr.common.params.*;
 import org.apache.solr.common.params.FacetParams.FacetRangeInclude;
 import org.apache.solr.common.params.FacetParams.FacetRangeOther;
-import org.apache.solr.common.params.GroupParams;
-import org.apache.solr.common.params.HighlightParams;
-import org.apache.solr.common.params.SpellingParams;
-import org.apache.solr.common.params.StatsParams;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
@@ -43,36 +28,15 @@ import org.junit.Test;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.geo.Box;
-import org.springframework.data.geo.Circle;
-import org.springframework.data.geo.Distance;
-import org.springframework.data.geo.Metrics;
-import org.springframework.data.geo.Point;
-import org.springframework.data.solr.core.query.AnyCriteria;
-import org.springframework.data.solr.core.query.Criteria;
-import org.springframework.data.solr.core.query.FacetOptions;
-import org.springframework.data.solr.core.query.FacetOptions.FacetParameter;
-import org.springframework.data.solr.core.query.FacetOptions.FacetSort;
-import org.springframework.data.solr.core.query.FacetOptions.FieldWithDateRangeParameters;
-import org.springframework.data.solr.core.query.FacetOptions.FieldWithFacetParameters;
-import org.springframework.data.solr.core.query.FacetOptions.FieldWithNumericRangeParameters;
-import org.springframework.data.solr.core.query.FacetQuery;
-import org.springframework.data.solr.core.query.GroupOptions;
-import org.springframework.data.solr.core.query.HighlightOptions;
-import org.springframework.data.solr.core.query.Join;
-import org.springframework.data.solr.core.query.MaxFunction;
-import org.springframework.data.solr.core.query.Query;
+import org.springframework.data.geo.*;
+import org.springframework.data.solr.core.query.*;
+import org.springframework.data.solr.core.query.FacetOptions.*;
 import org.springframework.data.solr.core.query.Query.Operator;
-import org.springframework.data.solr.core.query.SimpleFacetQuery;
-import org.springframework.data.solr.core.query.SimpleField;
-import org.springframework.data.solr.core.query.SimpleFilterQuery;
-import org.springframework.data.solr.core.query.SimpleHighlightQuery;
-import org.springframework.data.solr.core.query.SimpleQuery;
-import org.springframework.data.solr.core.query.SimpleStringCriteria;
-import org.springframework.data.solr.core.query.SolrDataQuery;
-import org.springframework.data.solr.core.query.SolrPageRequest;
-import org.springframework.data.solr.core.query.SpellcheckOptions;
-import org.springframework.data.solr.core.query.StatsOptions;
+
+import java.util.*;
+
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
 /**
  * @author Christoph Strobl
@@ -1563,35 +1527,35 @@ public class DefaultQueryParserTests {
 		// RANGE is being used on SolrJ even for DATE fields
 		assertEquals("1970-01-01T00:00:00.100Z", solrQuery.getFieldParam("field1", FacetParams.FACET_RANGE_START));
 		assertEquals("+1DAY", solrQuery.getFieldParam("field1", FacetParams.FACET_RANGE_GAP));
-		assertEquals("1970-01-01T02:46:40.000Z", solrQuery.getFieldParam("field1", FacetParams.FACET_RANGE_END));
+		assertEquals("1970-01-01T02:46:40Z", solrQuery.getFieldParam("field1", FacetParams.FACET_RANGE_END));
 		assertEquals("true", solrQuery.getFieldParam("field1", FacetParams.FACET_RANGE_HARD_END));
 		assertEquals("all", solrQuery.getFieldParam("field1", FacetParams.FACET_RANGE_INCLUDE));
 		assertEquals("all", solrQuery.getFieldParam("field1", FacetParams.FACET_RANGE_OTHER));
 
 		assertEquals("1970-01-01T00:00:00.100Z", solrQuery.getFieldParam("field2", FacetParams.FACET_RANGE_START));
 		assertEquals("+2DAY", solrQuery.getFieldParam("field2", FacetParams.FACET_RANGE_GAP));
-		assertEquals("1970-01-01T02:46:40.000Z", solrQuery.getFieldParam("field2", FacetParams.FACET_RANGE_END));
+		assertEquals("1970-01-01T02:46:40Z", solrQuery.getFieldParam("field2", FacetParams.FACET_RANGE_END));
 		assertNull(solrQuery.getFieldParam("field2", FacetParams.FACET_RANGE_HARD_END));
 		assertEquals("outer", solrQuery.getFieldParam("field2", FacetParams.FACET_RANGE_INCLUDE));
 		assertEquals("none", solrQuery.getFieldParam("field2", FacetParams.FACET_RANGE_OTHER));
 
 		assertEquals("1970-01-01T00:00:00.100Z", solrQuery.getFieldParam("field3", FacetParams.FACET_RANGE_START));
 		assertEquals("+2DAY", solrQuery.getFieldParam("field3", FacetParams.FACET_RANGE_GAP));
-		assertEquals("1970-01-01T02:46:40.000Z", solrQuery.getFieldParam("field3", FacetParams.FACET_RANGE_END));
+		assertEquals("1970-01-01T02:46:40Z", solrQuery.getFieldParam("field3", FacetParams.FACET_RANGE_END));
 		assertEquals("true", solrQuery.getFieldParam("field3", FacetParams.FACET_RANGE_HARD_END));
 		assertNull(solrQuery.getFieldParam("field3", FacetParams.FACET_RANGE_INCLUDE));
 		assertEquals("none", solrQuery.getFieldParam("field3", FacetParams.FACET_RANGE_OTHER));
 
 		assertEquals("1970-01-01T00:00:00.100Z", solrQuery.getFieldParam("field4", FacetParams.FACET_RANGE_START));
 		assertEquals("+2DAY", solrQuery.getFieldParam("field4", FacetParams.FACET_RANGE_GAP));
-		assertEquals("1970-01-01T02:46:40.000Z", solrQuery.getFieldParam("field4", FacetParams.FACET_RANGE_END));
+		assertEquals("1970-01-01T02:46:40Z", solrQuery.getFieldParam("field4", FacetParams.FACET_RANGE_END));
 		assertEquals("true", solrQuery.getFieldParam("field4", FacetParams.FACET_RANGE_HARD_END));
 		assertEquals("outer", solrQuery.getFieldParam("field4", FacetParams.FACET_RANGE_INCLUDE));
 		assertNull(solrQuery.getFieldParam("field4", FacetParams.FACET_RANGE_OTHER));
 
 		assertEquals("1970-01-01T00:00:00.100Z", solrQuery.getFieldParam("field5", FacetParams.FACET_RANGE_START));
 		assertEquals("+2DAY", solrQuery.getFieldParam("field5", FacetParams.FACET_RANGE_GAP));
-		assertEquals("1970-01-01T02:46:40.000Z", solrQuery.getFieldParam("field5", FacetParams.FACET_RANGE_END));
+		assertEquals("1970-01-01T02:46:40Z", solrQuery.getFieldParam("field5", FacetParams.FACET_RANGE_END));
 		assertNull(solrQuery.getFieldParam("field5", FacetParams.FACET_RANGE_HARD_END));
 		assertNull(solrQuery.getFieldParam("field5", FacetParams.FACET_RANGE_INCLUDE));
 		assertNull(solrQuery.getFieldParam("field5", FacetParams.FACET_RANGE_OTHER));

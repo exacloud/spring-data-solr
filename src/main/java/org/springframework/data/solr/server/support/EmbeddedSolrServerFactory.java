@@ -15,6 +15,20 @@
  */
 package org.springframework.data.solr.server.support;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.client.solrj.SolrClient;
+import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
+import org.apache.solr.core.CoreContainer;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.data.solr.server.SolrClientFactory;
+import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
+import org.springframework.util.ReflectionUtils;
+import org.springframework.util.ResourceUtils;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -28,21 +42,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
-
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.client.solrj.SolrClient;
-import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
-import org.apache.solr.core.CoreContainer;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.data.solr.server.SolrClientFactory;
-import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
-import org.springframework.util.ReflectionUtils;
-import org.springframework.util.ResourceUtils;
-import org.xml.sax.SAXException;
 
 /**
  * The EmbeddedSolrServerFactory allows hosting of an SolrServer instance in embedded mode. Configuration files are
@@ -133,7 +132,7 @@ public class EmbeddedSolrServerFactory implements SolrClientFactory, DisposableB
 	}
 
 	/**
-	 * Create {@link CoreContainer} for Solr version 4.4+ and handle changes in {@link CoreContainer#createAndLoad()}.
+	 * Create {@link CoreContainer} for Solr version 4.4+ and handle changes in {@link CoreContainer#createAndLoad(Path)}.
 	 * 
 	 * @param solrHomeDirectory
 	 * @param solrXmlFile
@@ -161,7 +160,7 @@ public class EmbeddedSolrServerFactory implements SolrClientFactory, DisposableB
 
 	@Override
 	public List<String> getCores() {
-		return new ArrayList<String>(getCoreContainer().getCoreNames());
+		return new ArrayList<String>(getCoreContainer().getAllCoreNames());
 	}
 
 	public void setSolrHome(String solrHome) {
